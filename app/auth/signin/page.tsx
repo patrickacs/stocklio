@@ -30,7 +30,10 @@ export default function SignInPage() {
         redirect: false,
       })
 
+      console.log('[SIGNIN] SignIn result:', result)
+
       if (result?.error) {
+        console.log('[SIGNIN] Error:', result.error)
         toast({
           title: 'Sign in failed',
           description: 'Invalid email or password',
@@ -38,6 +41,7 @@ export default function SignInPage() {
         })
         setIsLoading(false)
       } else if (result?.ok) {
+        console.log('[SIGNIN] Success! Redirecting to dashboard...')
         toast({
           title: 'Welcome back!',
           description: 'Redirecting to dashboard...',
@@ -45,6 +49,9 @@ export default function SignInPage() {
         // Use window.location.replace to force a full page reload
         // This ensures the session is properly loaded before accessing dashboard
         window.location.replace('/dashboard')
+      } else {
+        console.log('[SIGNIN] Unexpected result:', result)
+        setIsLoading(false)
       }
     } catch (error) {
       toast({

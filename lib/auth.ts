@@ -14,12 +14,14 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
+      console.log('[AUTH] Redirect callback:', { url, baseUrl })
       // Redirect to dashboard after login
       if (url.startsWith('/')) return `${baseUrl}${url}`
       else if (new URL(url).origin === baseUrl) return url
       return `${baseUrl}/dashboard`
     },
     async session({ token, session }) {
+      console.log('[AUTH] Session callback:', { hasToken: !!token, hasUser: !!session.user })
       if (token && session.user) {
         session.user.id = token.id
         session.user.name = token.name
@@ -30,6 +32,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async jwt({ token, user }) {
+      console.log('[AUTH] JWT callback:', { hasUser: !!user, tokenId: token.id })
       if (user) {
         token.id = user.id
       }
@@ -52,7 +55,10 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
+        console.log('[AUTH] Attempting to authorize:', { email: credentials?.email })
+
         if (!credentials?.email || !credentials?.password) {
+          console.log('[AUTH] Missing credentials')
           return null
         }
 
@@ -62,16 +68,22 @@ export const authOptions: NextAuthOptions = {
           },
         })
 
+        console.log('[AUTH] User found:', !!user)
+
         if (!user || !user.password) {
+          console.log('[AUTH] User not found or no password')
           return null
         }
 
         const isPasswordValid = await compare(credentials.password, user.password)
+        console.log('[AUTH] Password valid:', isPasswordValid)
 
         if (!isPasswordValid) {
+          console.log('[AUTH] Invalid password')
           return null
         }
 
+        console.log('[AUTH] Authorization successful for:', user.email)
         return {
           id: user.id,
           email: user.email,
