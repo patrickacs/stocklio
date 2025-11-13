@@ -29,7 +29,7 @@ export default function SignInPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        callbackUrl: '/dashboard',
       })
 
       if (result?.error) {
@@ -38,14 +38,9 @@ export default function SignInPage() {
           description: 'Invalid email or password',
           variant: 'destructive',
         })
-      } else {
-        toast({
-          title: 'Welcome back!',
-          description: 'You have been signed in successfully.',
-        })
-        router.push('/dashboard')
-        router.refresh()
+        setIsLoading(false)
       }
+      // If successful, NextAuth will redirect automatically
     } catch (error) {
       toast({
         title: 'Error',
