@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
@@ -18,41 +19,33 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const searchParams = useSearchParams()
+
+  // Show error message if login failed
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error === 'CredentialsSignin') {
+      toast({
+        title: 'Sign in failed',
+        description: 'Invalid email or password',
+        variant: 'destructive',
+      })
+    }
+  }, [searchParams, toast])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        toast({
-          title: 'Sign in failed',
-          description: 'Invalid email or password',
-          variant: 'destructive',
-        })
-      } else if (result?.ok) {
-        toast({
-          title: 'Welcome back!',
-          description: 'You have been signed in successfully.',
-        })
-        // Use window.location to force a full page reload with new session
-        window.location.href = '/dashboard'
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive',
-      })
-    } finally {
-      setIsLoading(false)
-    }
+    // Use NextAuth's default redirect behavior
+    await signIn('credentials', {
+      email,
+      password,
+      callbackUrl: '/dashboard',
+    })
+    // Note: signIn will redirect automatically, so code below won't execute on success
+    // If we reach here, it means there was an error
+    setIsLoading(false)
   }
 
   return (
