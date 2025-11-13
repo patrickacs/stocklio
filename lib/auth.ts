@@ -15,10 +15,22 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       console.log('[AUTH] Redirect callback:', { url, baseUrl })
-      // Redirect to dashboard after login
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return `${baseUrl}/dashboard`
+      // Handles redirect after successful sign in
+      // If url is relative, prepend baseUrl
+      if (url.startsWith('/')) {
+        const redirectUrl = `${baseUrl}${url}`
+        console.log('[AUTH] Redirecting to:', redirectUrl)
+        return redirectUrl
+      }
+      // If url is from same origin, allow it
+      if (new URL(url).origin === baseUrl) {
+        console.log('[AUTH] Redirecting to:', url)
+        return url
+      }
+      // Default to dashboard
+      const defaultUrl = `${baseUrl}/dashboard`
+      console.log('[AUTH] Redirecting to default:', defaultUrl)
+      return defaultUrl
     },
     async session({ token, session }) {
       console.log('[AUTH] Session callback:', { hasToken: !!token, hasUser: !!session.user })

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
@@ -18,6 +19,8 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
+  const { update } = useSession()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,19 +44,27 @@ export default function SignInPage() {
         })
         setIsLoading(false)
       } else if (result?.ok) {
-        console.log('[SIGNIN] Success! Redirecting to dashboard...')
+        console.log('[SIGNIN] Success! Updating session and redirecting...')
         toast({
           title: 'Welcome back!',
           description: 'Redirecting to dashboard...',
         })
-        // Use window.location.replace to force a full page reload
-        // This ensures the session is properly loaded before accessing dashboard
-        window.location.replace('/dashboard')
+
+        // Update the session to ensure it's loaded
+        await update()
+
+        // Wait a bit for the session cookie to be set
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        // Force a hard navigation to dashboard
+        console.log('[SIGNIN] Navigating to dashboard...')
+        window.location.href = '/dashboard'
       } else {
         console.log('[SIGNIN] Unexpected result:', result)
         setIsLoading(false)
       }
     } catch (error) {
+      console.log('[SIGNIN] Error caught:', error)
       toast({
         title: 'Error',
         description: 'Something went wrong. Please try again.',
