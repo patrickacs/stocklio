@@ -8,6 +8,7 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
+        "vercel-build": "prisma generate && prisma migrate deploy && next build",
         "start": "next start",
         "lint": "next lint",
         "db:push": "prisma db push",
@@ -18,8 +19,7 @@
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
         "deploy": "vercel --prod",
-        "deploy:preview": "vercel",
-        "postbuild": "prisma generate && prisma migrate deploy"
+        "deploy:preview": "vercel"
     },
     "prisma": {
         "seed": "tsx prisma/seed.ts"
