@@ -19,7 +19,7 @@
         "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
         "deploy": "vercel --prod",
         "deploy:preview": "vercel",
-        "postbuild": "prisma generate"
+        "postbuild": "prisma generate && prisma migrate deploy"
     },
     "prisma": {
         "seed": "tsx prisma/seed.ts"
