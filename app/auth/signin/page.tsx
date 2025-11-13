@@ -27,7 +27,7 @@ export default function SignInPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl: '/dashboard',
+        redirect: false,
       })
 
       if (result?.error) {
@@ -36,9 +36,14 @@ export default function SignInPage() {
           description: 'Invalid email or password',
           variant: 'destructive',
         })
-        setIsLoading(false)
+      } else if (result?.ok) {
+        toast({
+          title: 'Welcome back!',
+          description: 'You have been signed in successfully.',
+        })
+        // Use window.location to force a full page reload with new session
+        window.location.href = '/dashboard'
       }
-      // If successful, NextAuth will redirect automatically
     } catch (error) {
       toast({
         title: 'Error',
