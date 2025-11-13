@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Card } from '@/components/ui/card'
@@ -13,39 +12,48 @@ import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { Logo } from '@/components/layout/logo'
 import { useToast } from '@/hooks/use-toast'
 
-function SignInForm() {
+export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
-  const searchParams = useSearchParams()
-
-  // Show error message if login failed
-  useEffect(() => {
-    const error = searchParams.get('error')
-    if (error === 'CredentialsSignin') {
-      toast({
-        title: 'Sign in failed',
-        description: 'Invalid email or password',
-        variant: 'destructive',
-      })
-    }
-  }, [searchParams, toast])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // Use NextAuth's default redirect behavior
-    await signIn('credentials', {
-      email,
-      password,
-      callbackUrl: '/dashboard',
-    })
-    // Note: signIn will redirect automatically, so code below won't execute on success
-    // If we reach here, it means there was an error
-    setIsLoading(false)
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        toast({
+          title: 'Sign in failed',
+          description: 'Invalid email or password',
+          variant: 'destructive',
+        })
+        setIsLoading(false)
+      } else if (result?.ok) {
+        toast({
+          title: 'Welcome back!',
+          description: 'Redirecting to dashboard...',
+        })
+        // Use window.location.replace to force a full page reload
+        // This ensures the session is properly loaded before accessing dashboard
+        window.location.replace('/dashboard')
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      })
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -145,13 +153,5 @@ function SignInForm() {
         </Card>
       </motion.div>
     </div>
-  )
-}
-
-export default function SignInPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <SignInForm />
-    </Suspense>
   )
 }
