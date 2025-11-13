@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// Authentication Models
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?   // For credentials login
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  assets   Asset[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Asset {
+  id           String     @id @default(cuid())
+  ticker       String
+  shares       Float
+  avgPrice     Float
+  purchaseDate DateTime   @default(now())
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  // User relationship
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  dividends    Dividend[]
+
+  @@index([ticker])
+  @@index([userId])
+  @@map("assets")
+}
+
+model Dividend {
+  id        String   @id @default(cuid())
+  ticker    String
+  exDate    DateTime
+  payDate   DateTime
+  amount    Float
+  frequency String?
+  assetId   String?
+  createdAt DateTime @default(now())
+  asset     Asset?   @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@index([ticker])
+  @@index([exDate])
+  @@index([payDate])
+  @@map("dividends")
+}
+
+model Stock {
+  ticker           String   @id
+  name             String
+  sector           String?
+  industry         String?
+  currentPrice     Float?
+  peRatio          Float?
+  dividendYield    Float?
+  marketCap        Float?
+  week52High       Float?
+  week52Low        Float?
+  dayChange        Float?
+  dayChangePercent Float?
+  volume           Int?
+  lastUpdated      DateTime @default(now())
+
+  @@index([sector])
+  @@index([currentPrice])
+  @@index([peRatio])
+  @@index([dividendYield])
+  @@index([marketCap])
+  @@map("stocks")
+}
+
+model Cache {
+  key       String   @id
+  value     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("cache")
+}

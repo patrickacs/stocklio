@@ -1,0 +1,390 @@
+/* Global styles - already provided */
+/* app/globals.css */
+/* STOCKLIO - Global Styles and Design System Variables */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background and Foreground */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    
+    /* Card Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    /* Primary Colors - Navy Theme */
+    --primary: 233 54% 34%;
+    --primary-foreground: 210 40% 98%;
+    
+    /* Secondary Colors */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    /* Muted */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    /* Accent */
+    --accent: 160 60% 40%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Destructive - Red for Losses */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* UI Elements */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 233 54% 34%;
+    
+    /* Border Radius */
+    --radius: 1rem;
+    
+    /* Success Colors - Green for Profits */
+    --success: 158 64% 42%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Warning Colors */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* Chart Colors */
+    --chart-1: 233 54% 34%;
+    --chart-2: 158 64% 42%;
+    --chart-3: 174 62% 40%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 0 84% 60%;
+  }
+  
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 233 54% 45%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 160 60% 45%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 233 54% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Smooth Scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-400 rounded-full;
+    transition: background-color 0.2s;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
+  
+  /* Selection Colors */
+  ::selection {
+    @apply bg-navy-600 text-white;
+  }
+  
+  ::-moz-selection {
+    @apply bg-navy-600 text-white;
+  }
+}
+
+@layer components {
+  /* Glassmorphic Card Style */
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-slate-200/50 
+           rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+  
+  .glass-card-dark {
+    @apply bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 
+           rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+  
+  /* Primary Button Style */
+  .btn-primary {
+    @apply bg-navy-600 hover:bg-navy-700 text-white rounded-xl px-6 py-3 
+           font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg 
+           active:scale-100 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  /* Secondary Button Style */
+  .btn-secondary {
+    @apply bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl px-6 py-3 
+           font-medium transition-all duration-200 hover:shadow-md 
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  /* Ghost Button Style */
+  .btn-ghost {
+    @apply hover:bg-slate-100 text-slate-600 rounded-xl px-6 py-3 
+           font-medium transition-all duration-200;
+  }
+  
+  /* Success Button Style */
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-3 
+           font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg 
+           active:scale-100;
+  }
+  
+  /* Danger Button Style */
+  .btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white rounded-xl px-6 py-3 
+           font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg 
+           active:scale-100;
+  }
+  
+  /* Custom Input Styles */
+  .input-primary {
+    @apply border-2 border-slate-200 focus:border-navy-500 focus:ring-4 
+           focus:ring-navy-100 rounded-xl px-4 py-3 w-full transition-all duration-200 
+           placeholder-slate-400 hover:border-slate-300;
+  }
+  
+  /* Table Styles */
+  .table-row-hover {
+    @apply hover:bg-slate-50 transition-colors duration-150 cursor-pointer;
+  }
+  
+  .table-header-sticky {
+    @apply sticky top-0 bg-white z-10 shadow-sm;
+  }
+  
+  /* Profit/Loss Color Classes */
+  .text-profit {
+    @apply text-green-600 font-medium;
+  }
+  
+  .text-loss {
+    @apply text-red-500 font-medium;
+  }
+  
+  .bg-profit-light {
+    @apply bg-green-50;
+  }
+  
+  .bg-loss-light {
+    @apply bg-red-50;
+  }
+  
+  /* Loading Skeleton */
+  .skeleton {
+    @apply animate-pulse bg-slate-200 rounded-lg;
+  }
+  
+  .skeleton-text {
+    @apply h-4 bg-slate-200 rounded animate-pulse;
+  }
+  
+  .skeleton-card {
+    @apply h-32 bg-slate-200 rounded-2xl animate-pulse;
+  }
+  
+  /* Chart Container */
+  .chart-container {
+    @apply w-full h-[400px] p-4 glass-card;
+  }
+  
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .badge-warning {
+    @apply bg-amber-100 text-amber-800;
+  }
+  
+  .badge-info {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  /* Tooltip Arrow */
+  .tooltip-arrow {
+    @apply absolute w-2 h-2 bg-slate-900 rotate-45;
+  }
+  
+  /* Focus Styles */
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 
+           focus-visible:ring-navy-500 focus-visible:ring-offset-2;
+  }
+  
+  /* Divider */
+  .divider {
+    @apply border-t border-slate-200 my-6;
+  }
+  
+  /* Container Padding */
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Grid Responsive */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+}
+
+@layer utilities {
+  /* Text Balance */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Number Animation */
+  .animate-count {
+    animation: count-up 0.6s ease-out;
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-navy-600 to-navy-900 bg-clip-text text-transparent;
+  }
+  
+  .gradient-text-green {
+    @apply bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent;
+  }
+  
+  /* Gradient Backgrounds */
+  .gradient-navy {
+    @apply bg-gradient-to-br from-navy-600 to-navy-900;
+  }
+  
+  .gradient-success {
+    @apply bg-gradient-to-br from-green-500 to-emerald-600;
+  }
+  
+  .gradient-danger {
+    @apply bg-gradient-to-br from-red-400 to-red-600;
+  }
+  
+  /* Hide Scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* Truncate Text */
+  .truncate-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  .truncate-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  
+  /* Shimmer Effect */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.5) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+  }
+  
+  /* Print Styles */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+  }
+  
+  /* Responsive Text */
+  .text-responsive {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  /* Safe Area Padding for Mobile */
+  .safe-area-padding {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
