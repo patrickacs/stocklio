@@ -6,6 +6,7 @@ import prisma from '@/lib/db'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
+  debug: true, // Enable debug mode to see what's happening
   session: {
     strategy: 'jwt',
   },
