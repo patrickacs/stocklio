@@ -1,11 +1,19 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@auth/prisma-adapter'
 import { compare } from 'bcryptjs'
 import prisma from '@/lib/db'
 
+// Debug: Log environment variables (redacted)
+console.log('=== AUTH CONFIG INITIALIZATION ===')
+console.log('NEXTAUTH_SECRET exists:', !!process.env.NEXTAUTH_SECRET)
+console.log('NEXTAUTH_SECRET length:', process.env.NEXTAUTH_SECRET?.length)
+console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log('useSecureCookies will be:', process.env.NODE_ENV === 'production')
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  // NOTE: Removed PrismaAdapter - not needed with JWT strategy
+  // Using JWT strategy means sessions are stored in JWTs, not the database
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
@@ -86,10 +94,15 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials) {
+        console.log('=== AUTHORIZE CALLBACK ===')
+        console.log('Credentials received:', !!credentials)
+
         if (!credentials?.email || !credentials?.password) {
+          console.log('Missing credentials')
           return null
         }
 
+        console.log('Looking up user:', credentials.email)
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email,
@@ -97,15 +110,19 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user || !user.password) {
+          console.log('User not found or no password')
           return null
         }
 
+        console.log('User found, verifying password')
         const isPasswordValid = await compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
+          console.log('Invalid password')
           return null
         }
 
+        console.log('Password valid, returning user:', user.id)
         return {
           id: user.id,
           email: user.email,
