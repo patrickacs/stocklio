@@ -15,12 +15,29 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Redirect to dashboard after login
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return `${baseUrl}/dashboard`
+      console.log('Redirect callback - url:', url, 'baseUrl:', baseUrl)
+
+      // If url is relative, prepend baseUrl
+      if (url.startsWith('/')) {
+        const redirectUrl = `${baseUrl}${url}`
+        console.log('Redirecting to relative URL:', redirectUrl)
+        return redirectUrl
+      }
+
+      // If url has the same origin as baseUrl, allow it
+      if (new URL(url).origin === baseUrl) {
+        console.log('Redirecting to same origin URL:', url)
+        return url
+      }
+
+      // Default redirect to dashboard
+      const defaultUrl = `${baseUrl}/dashboard`
+      console.log('Redirecting to default:', defaultUrl)
+      return defaultUrl
     },
     async session({ token, session }) {
+      console.log('Session callback - token:', !!token, 'session:', !!session)
+
       if (token && session.user) {
         session.user.id = token.id
         session.user.name = token.name
@@ -31,8 +48,11 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async jwt({ token, user }) {
+      console.log('JWT callback - user:', !!user, 'token:', !!token)
+
       if (user) {
         token.id = user.id
+        console.log('JWT: Added user id to token:', user.id)
       }
 
       return token

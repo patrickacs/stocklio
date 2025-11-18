@@ -24,6 +24,9 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
+      console.log('=== SIGN IN ATTEMPT ===')
+      console.log('Email:', email)
+
       const result = await signIn('credentials', {
         email,
         password,
@@ -31,7 +34,11 @@ export default function SignInPage() {
         redirect: false,
       })
 
+      console.log('=== SIGN IN RESULT ===')
+      console.log('Result:', JSON.stringify(result, null, 2))
+
       if (result?.error) {
+        console.error('=== SIGN IN ERROR ===', result.error)
         toast({
           title: 'Sign in failed',
           description: 'Invalid email or password',
@@ -39,16 +46,29 @@ export default function SignInPage() {
         })
         setIsLoading(false)
       } else if (result?.ok) {
+        console.log('=== SIGN IN SUCCESSFUL ===')
+        console.log('Result URL:', result.url)
+
         toast({
           title: 'Welcome back!',
           description: 'Redirecting to dashboard...',
         })
-        // Use window.location.href for a full page reload
-        // This ensures the session is properly loaded before accessing dashboard
-        window.location.href = '/dashboard'
+
+        // Small delay to ensure session cookie is set
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        // Use the URL provided by NextAuth or fallback to dashboard
+        const redirectUrl = result.url || '/dashboard'
+        console.log('=== REDIRECTING TO ===', redirectUrl)
+
+        // Force a full page reload to ensure session is loaded
+        window.location.href = redirectUrl
+      } else {
+        console.warn('=== UNEXPECTED RESULT ===', result)
+        setIsLoading(false)
       }
     } catch (error) {
-      console.error('Sign in error:', error)
+      console.error('=== EXCEPTION DURING SIGN IN ===', error)
       toast({
         title: 'Error',
         description: 'Something went wrong. Please try again.',
