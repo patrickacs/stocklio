@@ -1,27 +1,41 @@
+import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token
+    const isAuthPage = req.nextUrl.pathname.startsWith('/auth/')
 
-  const { pathname } = req.nextUrl
+    // If user is authenticated and trying to access auth pages, redirect to dashboard
+    if (isAuthPage && token) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
 
-  // Allow the requests if the following is true
-  // 1) It's a request for next-auth session & provider fetching
-  // 2) the token exists
-  if (pathname.includes('/api/auth') || token) {
     return NextResponse.next()
-  }
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const isAuthPage = req.nextUrl.pathname.startsWith('/auth/')
 
-  // Redirect them to login if they are not authenticated and are trying to access a protected route
-  if (!token && pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/auth/signin', req.url))
-  }
+        // Allow access to auth pages without token
+        if (isAuthPage) {
+          return true
+        }
 
-  return NextResponse.next()
-}
+        // Require token for protected routes
+        return !!token
+      },
+    },
+  }
+)
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: [
+    '/dashboard/:path*',
+    '/api/portfolio/:path*',
+    '/api/dividends/:path*',
+    '/api/screener/:path*',
+    '/auth/:path*',
+  ],
 }

@@ -28,6 +28,7 @@ export default function SignInPage() {
         email,
         password,
         callbackUrl: '/dashboard',
+        redirect: false,
       })
 
       if (result?.error) {
@@ -37,8 +38,17 @@ export default function SignInPage() {
           variant: 'destructive',
         })
         setIsLoading(false)
+      } else if (result?.ok) {
+        toast({
+          title: 'Welcome back!',
+          description: 'Redirecting to dashboard...',
+        })
+        // Use window.location.href for a full page reload
+        // This ensures the session is properly loaded before accessing dashboard
+        window.location.href = '/dashboard'
       }
     } catch (error) {
+      console.error('Sign in error:', error)
       toast({
         title: 'Error',
         description: 'Something went wrong. Please try again.',

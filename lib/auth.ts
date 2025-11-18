@@ -6,6 +6,7 @@ import prisma from '@/lib/db'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
   },
@@ -13,7 +14,10 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
   callbacks: {
-    async redirect({ baseUrl }) {
+    async redirect({ url, baseUrl }) {
+      // Redirect to dashboard after login
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      else if (new URL(url).origin === baseUrl) return url
       return `${baseUrl}/dashboard`
     },
     async session({ token, session }) {
