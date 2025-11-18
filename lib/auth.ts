@@ -13,10 +13,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Redirect to dashboard after login
-      if (url.startsWith('/')) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
+    async redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`
     },
     async session({ token, session }) {
