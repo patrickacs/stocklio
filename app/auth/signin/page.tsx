@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { Logo } from '@/components/layout/logo'
 import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -18,6 +19,7 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,15 +56,26 @@ export default function SignInPage() {
           description: 'Redirecting to dashboard...',
         })
 
-        // Small delay to ensure session cookie is set
-        await new Promise(resolve => setTimeout(resolve, 100))
+        // Wait longer for the session cookie to be set and propagate
+        console.log('=== WAITING FOR SESSION COOKIE ===')
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        console.log('=== CHECKING COOKIES ===')
+        console.log('All cookies:', document.cookie)
 
         // Use the URL provided by NextAuth or fallback to dashboard
         const redirectUrl = result.url || '/dashboard'
         console.log('=== REDIRECTING TO ===', redirectUrl)
 
-        // Force a full page reload to ensure session is loaded
-        window.location.href = redirectUrl
+        // Use router.push for client-side navigation first
+        // This works better with Next.js App Router
+        router.push('/dashboard')
+
+        // Fallback: if router.push doesn't work, use window.location
+        setTimeout(() => {
+          console.log('=== FALLBACK REDIRECT ===')
+          window.location.href = '/dashboard'
+        }, 500)
       } else {
         console.warn('=== UNEXPECTED RESULT ===', result)
         setIsLoading(false)
