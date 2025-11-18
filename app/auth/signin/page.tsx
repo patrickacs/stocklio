@@ -27,7 +27,7 @@ export default function SignInPage() {
       const result = await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        callbackUrl: '/dashboard',
       })
 
       if (result?.error) {
@@ -37,14 +37,6 @@ export default function SignInPage() {
           variant: 'destructive',
         })
         setIsLoading(false)
-      } else if (result?.ok) {
-        toast({
-          title: 'Welcome back!',
-          description: 'Redirecting to dashboard...',
-        })
-        // Use window.location.replace to force a full page reload
-        // This ensures the session is properly loaded before accessing dashboard
-        window.location.replace('/dashboard')
       }
     } catch (error) {
       toast({
